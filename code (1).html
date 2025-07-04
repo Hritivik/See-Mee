@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>See Me - Social Network</title>
+    <style>
+        @font-face {
+            font-family: 'AppFont';
+            src: local('Arial'), local('Helvetica');
+            font-weight: 300 700;
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        @media screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
+            body {
+                padding-bottom: env(safe-area-inset-bottom, 20px);
+            }
+        }
+        :root {
+            --primary: #FF2D55;
+            --secondary: #E23367;
+            --accent: #4cc9f0;
+            --dark: #1e1e24;
+            --light: #f8f9fa;
+            --success: #4bb543;
+            --warning: #f0a202;
+            --danger: #f72585;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
+            touch-action: manipulation;
+        }
+        
+        /* App Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .app-header .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* Main Content */
+        .app-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            padding-bottom: 70px;
+            background-color: white;
+        }
+        
+        /* Social Components */
+        .stories-container {
+            display: flex;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+            overflow-x: auto;
+        }
+        
+        .story {
+            margin-right: 1rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .story-label {
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        /* Post Styles */
+        .post {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+        .business-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        
+        .business-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .post-user {
+            font-weight: 500;
+        }
+        
+        .post-image img {
+            width: 100%;
+            border-radius: 4px;
+            display: block;
+        }
+        
+        .post-actions {
+            display: flex;
+            padding: 0.5rem 1rem;
+        }
+        
+        .post-action {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+        
+        .post-caption {
+            padding: 0 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .business-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .business-card p {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .business-card .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        .stats-item {
+            text-align: center;
+        }
+        
+        .stats-item .value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .stats-item .label {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        .chat-preview {
+            background: #f9f9f9;
+            border-radius: 12px;
+            margin: 1rem 0;
+            padding: 1rem;
+        }
+        
+        .chat-header h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .chat-content {
+            flex: 1;
+        }
+        
+        .chat-name {
+            font-weight: 500;
+        }
+        
+        .chat-text {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .chat-time {
+            font-size: 0.7rem;
+            color: #999;
+        }
+        
+        /* Action Button */
+        .action-btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 0.5rem;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--secondary);
+        }
+        
+        /* Feature Sections */
+        .feature-section {
+            margin-bottom: 2rem;
+        }
+        
+        .feature-section h2 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-size: 1.3rem;
+        }
+        
+        /* Business Idea Generator */
+        .idea-generator {
+            background-color: #f0f4ff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .idea-generator h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .idea-display {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent);
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.8rem 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+            max-width: 480px;
+            margin: 0 auto;
+            border-top: 1px solid #eee;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-icon {
+            font-size: 1.4rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #888;
+        }
+        
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        .input-group input, 
+        .input-group select, 
+        .input-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .input-group textarea {
+            min-height: 100px;
+        }
+        
+        /* Business Ideas Array */
+        .business-ideas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 400px) {
+            .business-ideas {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <h1>See Me</h1>
+        <div class="user-avatar">JD</div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Stories Section -->
+        <div class="stories-container">
+            <div class="story">
+                <div class="story-avatar">+</div>
+                <div class="story-label">Your Story</div>
+            </div>
+            <!-- More stories would go here -->
+        </div>
+
+        <!-- Feed Section -->
+        <div class="post">
+            <div class="post-header">
+                <div class="post-avatar">JD</div>
+                <div class="post-user">johndoe</div>
+            </div>
+            <div class="post-image">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlBvc3QgSW1hZ2U8L3RleHQ+PC9zdmc+" alt="User post">
+            </div>
+            <div class="post-actions">
+                <button class="post-action">❤️</button>
+                <button class="post-action">💬</button>
+                <button class="post-action">🔗</button>
+            </div>
+            <div class="post-caption">
+                <strong>johndoe</strong> Just set up my new profile on See Me! #social #newapp
+            </div>
+        </div>
+
+        <!-- Chat Preview -->
+        <div class="chat-preview">
+            <div class="chat-header">
+                <h3>Recent Messages</h3>
+            </div>
+            <div class="chat-item">
+                <div class="chat-avatar">AB</div>
+                <div class="chat-content">
+                    <div class="chat-name">Amanda B.</div>
+                    <div class="chat-text">Hey! How's it going?</div>
+                </div>
+                <div class="chat-time">2h</div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div>Feed</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">🔍</div>
+            <div>Explore</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">📱</div>
+            <div>Live</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">💬</div>
+            <div>Chats</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">👤</div>
+            <div>Profile</div>
+        </div>
+    </nav>
+    
+    <!-- New Post Modal -->
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Post</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="input-group">
+                <textarea id="postContent" placeholder="What's on your mind?"></textarea>
+            </div>
+            <div class="input-group">
+                <input type="file" id="postImage" accept="image/*">
+            </div>
+            <button class="action-btn">Post</button>
+        </div>
+    </div>
+    
+    <script>
+        // Social media functionality
+        const postModal = document.getElementById('postModal');
+        const closeModal = document.getElementById('closeModal');
+        
+        // Open post modal when clicking the + button in stories
+        document.querySelector('.story-avatar').addEventListener('click', () => {
+            postModal.classList.add('active');
+        });
+        
+        // Modal functionality
+        document.querySelectorAll('.post-action').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(this.textContent === '❤️') {
+                    this.textContent = '❤️🔥';
+                }
+            });
+        });
+        
+        closeModal.addEventListener('click', () => {
+            businessModal.classList.remove('active');
+        });
+        
+        // Navigation handling
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+        
+        // Add animation for the idea display
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes flash {
+                0% { background-color: white; }
+                50% { background-color: rgba(76, 201, 240, 0.2); }
+                100% { background-color: white; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
